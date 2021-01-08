@@ -1,7 +1,4 @@
 package threads.basic;
-
-import java.sql.Time;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class second {
@@ -13,7 +10,7 @@ public class second {
 
 }
 class Worker implements Runnable{
-    private long timeStart = System.currentTimeMillis();//время запуска треда
+    final private long timeStart = System.currentTimeMillis();//время запуска треда
     int numberOfThread;
 
     public Worker(int numThread){
