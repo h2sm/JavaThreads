@@ -20,16 +20,16 @@ public class fifth {
 }
 class Buffer{
     private static int[] SHAREDMEMORY = new int[1];
-    void addSmth(int num){//добавляем в буфер 
+    void addSmth(int num){//добавляем в буфер
         SHAREDMEMORY[num]++;
-        showSum();
+        showSum("add");
     }
     void retrieveSmth(int num){//забираем из буфера
         SHAREDMEMORY[num]--;
-        showSum();
+        showSum("retrieve");
     }
-    void showSum(){
-        System.out.println(Arrays.toString(SHAREDMEMORY));
+    void showSum(String str){
+        System.out.println(Arrays.toString(SHAREDMEMORY) + " from " + str);
     }
 
 }
