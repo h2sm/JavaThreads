@@ -1,6 +1,4 @@
 package threads.basic;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -21,26 +19,17 @@ public class fifth {
 
 }
 class Buffer{
-    //private static ArrayList<Integer> MEMORY = new ArrayList<>();//пускай размер массива-буфера будет ограничен 5 элементами int
     private static int[] SHAREDMEMORY = new int[1];
-    void addSmth(int num){//добавляем в буфер какое-то значене
-//        if (MEMORY.size()<=5) {
-//            MEMORY.add(num);
-//        }
-//        else {
-//            System.out.println("num + " +num + " wasnt add due to buffer limit");
-//        }
+    void addSmth(int num){//добавляем в буфер 
         SHAREDMEMORY[num]++;
         showSum();
     }
-    void retrieveSmth(int num){//забираем какую-нибудь позицию
+    void retrieveSmth(int num){//забираем из буфера
         SHAREDMEMORY[num]--;
-//        MEMORY.remove(num);
         showSum();
     }
     void showSum(){
         System.out.println(Arrays.toString(SHAREDMEMORY));
-        //System.out.println(MEMORY);
     }
 
 }
