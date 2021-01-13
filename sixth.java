@@ -18,10 +18,10 @@ public class sixth {
         producersThreads.forEach(Thread::start);
         consumersThreads.forEach(Thread::start);
 
-        //Thread.sleep(10000);
+        Thread.sleep(3000);
 
-//        producersThreads.forEach(Thread::interrupt);
-//        consumersThreads.forEach(Thread::interrupt);
+        producersThreads.forEach(Thread::interrupt);
+        consumersThreads.forEach(Thread::interrupt);
     }
 
 }
@@ -38,7 +38,7 @@ class BufferFile{
             while (SHAREDMEMORY[0]!=0) condition.await();
             SHAREDMEMORY[0]++;
             showSum("add");
-            condition.signal();
+            condition.signalAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -51,7 +51,7 @@ class BufferFile{
             while (SHAREDMEMORY[0]!=1) condition.await();
             SHAREDMEMORY[0]--;
             showSum("retrieve");
-            condition.signal();
+            condition.signalAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -61,16 +61,14 @@ class BufferFile{
     void showSum(String str){
         System.out.println(Arrays.toString(SHAREDMEMORY) + " from " + str);
     }
-    int sum(){
-        return Arrays.stream(SHAREDMEMORY).sum();
-    }
 }
 
 class Producers implements Runnable{
     BufferFile bufferFile = new BufferFile();
     @Override
     public void run() {
-        bufferFile.add();
+        while (!Thread.currentThread().isInterrupted())
+            bufferFile.add();
         System.out.println(Thread.currentThread().getName());
     }
 }
@@ -78,10 +76,9 @@ class Consumers implements Runnable{
     BufferFile bufferFile = new BufferFile();
     @Override
     public void run() {
-        bufferFile.retrieve();
+        while (!Thread.currentThread().isInterrupted())
+            bufferFile.retrieve();
         System.out.println(Thread.currentThread().getName());
 
     }
 }
-
-
