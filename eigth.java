@@ -12,7 +12,7 @@ public class eight {
     }
 }
 class PiCount{
-    double PI = 0;
+    private double PI = 0;
     void countPI(){
         for (int i = 1; i < 1000000000; i += 4) {
             PI += 8.0 / (i * (i + 2L));
