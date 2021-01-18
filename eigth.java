@@ -1,44 +1,34 @@
 package threads.basic;
 import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class eight {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         var piThreads = new ArrayList<Thread>();
         for (int i = 0; i < 5; i++) {
-            piThreads.add(new Thread(new Counter()));
+            piThreads.add(new Thread(new Counter(i)));
         }
         piThreads.forEach(Thread::start);
-
     }
 }
 class PiCount{
-    static ReentrantLock reentrantLock = new ReentrantLock();
-    static int i = 1;
-    static int EPS = 1000000000;
-    static private double PI = 0;
-    static void countPI(){
-        reentrantLock.lock();
-        try {
-            if (i<EPS) {
-                PI += 8.0 / (i * (i + 2L));
-                i+=4;
-            }
-            System.out.println(PI);
+    double PI = 0;
+    void countPI(){
+        for (int i = 1; i < 1000000000; i += 4) {
+            PI += 8.0 / (i * (i + 2L));
         }
-        finally {
-            reentrantLock.unlock();
-        }
+        System.out.println(PI);
     }
 }
 
 class Counter implements Runnable{
+    int threadNumber;
+    public Counter(int id){
+        this.threadNumber=id;
+    }
     PiCount piCount = new PiCount();
     @Override
     public void run() {
-        while (PiCount.i != PiCount.EPS) {
-            piCount.countPI();
-            System.out.println(Thread.currentThread().getName() +  " " + PiCount.i + " i " + PiCount.EPS + " eps");
-        }
+        piCount.countPI();
+        System.out.println(Thread.currentThread().getName());
     }
 }
