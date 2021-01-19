@@ -18,27 +18,22 @@ public class eleven {
     }
 }
 class ShowerRoom{
-    static private ReentrantLock rl = new ReentrantLock();
+    private ReentrantLock rl = new ReentrantLock();
     private int showerRoomCapability = 10;
-    static private int manNumber = 0;//счетчик девушек в душевой
-    static private int womanNumber = 0;//счетчик мужчин в душевой
-     private Condition manWants = rl.newCondition();
+    private int manNumber = 0;//счетчик девушек в душевой
+    private int womanNumber = 0;//счетчик мужчин в душевой
+    private Condition manWants = rl.newCondition();
     private Condition womanWants = rl.newCondition();
 
     void womanWantsToEnter(int num) throws InterruptedException {
         rl.lock();
         try {
-            boolean x1 = manNumber> 0 ;
-            boolean y1 = womanNumber==showerRoomCapability;
-            while (manNumber > 0 | womanNumber == showerRoomCapability ){
-                boolean x = manNumber> 0 ;
-                boolean y = womanNumber==showerRoomCapability;
-                boolean z = x|y;
+            while (manNumber != 0 || womanNumber >= showerRoomCapability ){
+                System.out.println("Девушка " + num + " попыталась войти. Девушек - " + womanNumber + ", мужчин - " + manNumber);
                 womanWants.await();//пока есть мужчины или все кабинки заняты женщинами, то ждем
-                System.out.println(x + " "+ y+ "Девушка " + num + " попыталась войти. Девушек - " + womanNumber + ", мужчин - " + manNumber);
             }
             womanNumber++;
-            System.out.println(x1 + " "+ y1 + "Зашла девушка " + num + ". Количество девушек в душевой - " + womanNumber);
+            System.out.println("Зашла девушка " + num + ". Количество девушек в душевой - " + womanNumber);
         }
         finally {
             rl.unlock();
@@ -47,11 +42,9 @@ class ShowerRoom{
     void manWantsToEnter(int num) throws InterruptedException {
         rl.lock();
         try {
-            while (womanNumber > 0 | manNumber == showerRoomCapability) {
-                boolean x = womanNumber > 0;
-                boolean y =manNumber==showerRoomCapability;
-                manWants.await();//пока есть женщины или все кабинки заняты мужинами, то ждем
-                System.out.println(x + " " + y + " Мужчина " + num + " попытался войти. Девушек - " + womanNumber + ", мужчин - " + manNumber );
+            while (womanNumber != 0 || manNumber >= showerRoomCapability) {
+                System.out.println("Мужчина " + num + " попытался войти. Девушек - " + womanNumber + ", мужчин - " + manNumber );
+                manWants.await();//пока есть женщины(кол-во женщин !=0) или все кабинки заняты мужинами, то ждем
             }
             manNumber++;
             System.out.println("Зашел мужчина " + num+ ". Количество мужчин в душевой - " + manNumber);
@@ -66,15 +59,13 @@ class ShowerRoom{
             if (womanNumber != 0) {
                 womanNumber--;
                 System.out.println("Вышла девушка " + num + ". Количество девушек - " + womanNumber);
-                //womanWants.signal();//одна девушка может зайти
             }
             if (womanNumber==0){
                 System.out.println("Все женщины вышли. Мужчинам можно войти");
                 manWants.signalAll();
             }
             else if (womanNumber >=7 && womanNumber<=9){
-                //System.out.println("Все женщины вышли");
-                manWants.signal();//а вдруг мужик зайдет
+                manWants.signal();//попытка симуляции ситуации, если вдруг мужчина решит зайти
                 womanWants.signal();//женщина хочет зайти
             }
         }
@@ -88,7 +79,6 @@ class ShowerRoom{
             if (manNumber!=0){
                 manNumber--;
                 System.out.println("Мужчина " + num + " вышел. Количество людей - " + manNumber);
-                //manWants.signal();//пустим мужчину в душевую
             }
             if (manNumber==0){
                 System.out.println("Все мужчины вышли. Девушкам можно зайти");
