@@ -73,8 +73,13 @@ class Reader implements Runnable{
     public void run() {
         size = data.getSize();
         while (!Thread.currentThread().isInterrupted()) {
-            data.readFromDatabase(rand.nextInt(10));
-            System.out.println(Thread.currentThread().getName() + " READER");
+            try {
+                int x = rand.nextInt(10);
+                data.readFromDatabase(x);
+                System.out.println(Thread.currentThread().getName() + " READER");
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
         }
     }
 }
