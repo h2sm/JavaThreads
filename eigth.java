@@ -1,34 +1,44 @@
 package threads.basic;
-import java.util.ArrayList;
 
 public class eight {
     public static void main(String[] args) throws InterruptedException {
-        var piThreads = new ArrayList<Thread>();
-        for (int i = 0; i < 5; i++) {
-            piThreads.add(new Thread(new Counter(i)));
+        double pi = 0.0;
+        int threadCount = 5;//треды
+        int N = 100000;//"элементы"
+        PiThread[] threads = new PiThread[threadCount];
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new PiThread(threadCount, i, N);
+            threads[i].start();
         }
-        piThreads.forEach(Thread::start);
+        for (int i = 0; i < threadCount; i++) {
+            threads[i].join();
+        }
+        for (int i = 0; i < threadCount; i++) {
+            pi += threads[i].getSum();
+        }
+        System.out.print(pi*4);
     }
 }
-class PiCount{
-    double PI = 0;
-    void countPI(){
-        for (int i = 1; i < 1000000000; i += 4) {
-            PI += 8.0 / (i * (i + 2L));
-        }
-        System.out.println(PI);
-    }
-}
+class PiThread extends Thread {
+    private final int threadCount;
+    private final int threadRemainder;
+    private final int N;
+    private double sum  = 0;
 
-class Counter implements Runnable{
-    int threadNumber;
-    public Counter(int id){
-        this.threadNumber=id;
+    public PiThread(int threadCount, int threadRemainder, int n) {
+        this.threadCount = threadCount;
+        this.threadRemainder = threadRemainder;
+        this.N = n;
     }
-    PiCount piCount = new PiCount();
     @Override
     public void run() {
-        piCount.countPI();
-        System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i <= N; i++) {//поток0 N%5==0 элементы. поток 1n%5==1 элементы....
+            if (i % threadCount == threadRemainder) {
+                sum += Math.pow(-1, i) / (2 * i + 1);
+            }
+        }
     }
+    public double getSum() {
+            return sum;
+        }
 }
