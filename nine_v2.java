@@ -15,32 +15,31 @@ public class nine_v2 {
     }
 }
 class Eat {
-    static ArrayList <Boolean> fork = new ArrayList<>();//доступные вилки
+    static ArrayList <Boolean> fork = new ArrayList<>();//доступные вилки, true - свободны, false - заняты
     static ReentrantLock rlLock;
     static Condition cond;
     Eat(){
         rlLock = new ReentrantLock();
         cond = rlLock.newCondition();
     }
-    void startEating(int id, int leftForkID, int rightForkID) {
-        rlLock.lock();
-        try {
-            if (fork.get(leftForkID) == true || fork.get(rightForkID) == true) {
-                fork.set(leftForkID, false);
-                fork.set(rightForkID, false);
-                System.out.println("Философ " + id + " взял " + leftForkID + " и" + rightForkID + " вилки. Состояние:" + fork);
-                Thread.sleep(100);
-                fork.set(leftForkID, true);
-                fork.set(rightForkID, true);
-                System.out.println("Философ " + id + " положил " + leftForkID + " и" + rightForkID + " вилки " + " Состояние:" + fork);
-                cond.signalAll();
+    void startEating(int id, int leftForkID, int rightForkID) throws InterruptedException {
+            while (true) {
+                rlLock.lock();
+                if (fork.get(leftForkID) == true && fork.get(rightForkID) == true) {
+                    fork.set(leftForkID, false);
+                    fork.set(rightForkID, false);
+                    System.out.println("Философ " + id + " взял " + leftForkID + " и" + rightForkID + " вилки. Состояние:" + fork);
+                    rlLock.unlock();
+                    Thread.sleep(3000);
+                    rlLock.lock();
+                    fork.set(leftForkID, true);
+                    fork.set(rightForkID, true);
+                    System.out.println("Философ " + id + " положил " + leftForkID + " и" + rightForkID + " вилки " + " Состояние:" + fork);
+                    rlLock.unlock();
+                } else {
+                    rlLock.unlock();
+                }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        finally {
-            rlLock.unlock();
-        }
     }
     void starterPack(){
         for (int i = 0; i <7 ; i++) {
@@ -65,7 +64,10 @@ class Philosopher implements Runnable{
             leftForkID = id - 1;
             rightForkID = id;
         }
-        System.out.println(id + " " + leftForkID + " " + rightForkID + " " + Thread.currentThread().getName());
-        eat.startEating(id, leftForkID, rightForkID);
+        try {
+            eat.startEating(id, leftForkID, rightForkID);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
