@@ -2,6 +2,7 @@ package threads.basic;
 
 public class eight {
     public static void main(String[] args) throws InterruptedException {
+        String accuracyDouble;
         double pi = 0.0;
         int threadCount = 5;//треды
         int N = 100000;//"элементы"
@@ -16,7 +17,8 @@ public class eight {
         for (int i = 0; i < threadCount; i++) {
             pi += threads[i].getSum();
         }
-        System.out.print(pi*4);
+        accuracyDouble = String.format("%.9f",pi*4);
+        System.out.print(accuracyDouble);
     }
 }
 class PiThread extends Thread {
